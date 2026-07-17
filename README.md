@@ -1,4 +1,4 @@
-# dbt Patterns
+# dbt Integrations
 
 Sanitized dbt reference patterns from enterprise BigQuery data platform work.
 
@@ -22,7 +22,7 @@ This is a **portfolio / learning repo**, not a clone of any company project. All
 ## Structure
 
 ```
-dbt-patterns/
+dbt-integrations/
 ├── dbt_project.yml
 ├── dbt-styleguide.md
 ├── models/
@@ -47,6 +47,18 @@ dbt-patterns/
 | Real source systems | Generic names (`crm`, `erp`, `payments`) |
 
 Never commit real credentials, service accounts, or customer data.
+
+---
+
+## Contribution rule
+
+Pattern work lands on a descriptive feature branch, then merges to `main` via PR:
+
+```text
+feature/dbt-<nn>-<short-descriptive-slug>
+```
+
+Example: `feature/dbt-01-incremental-filter`
 
 ---
 
