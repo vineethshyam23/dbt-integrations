@@ -1,0 +1,11 @@
+.DS_Store
+target/
+dbt_packages/
+logs/
+.env
+.env.*
+*credentials*
+*.bak
+SESSION*.md
+PHASE*.md
+PUSH_TO_GITHUB.md
