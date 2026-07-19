@@ -70,6 +70,14 @@ Example: `feature/dbt-01-incremental-filter`
 
 ---
 
+## Patterns shipped
+
+| # | Pattern | Location |
+|---|---------|----------|
+| 01 | Incremental filter macro (`get_filter_val`) | [`examples/01-incremental-filter/`](examples/01-incremental-filter/) |
+
+See [`docs/PATTERN_BACKLOG.md`](docs/PATTERN_BACKLOG.md) for Done / Next.
+
 ## Status
 
-Scaffold ready. Pattern examples will be added incrementally (sanitized excerpts only).
+First pattern shipped. Further examples land one per weekly run (sanitized excerpts only).

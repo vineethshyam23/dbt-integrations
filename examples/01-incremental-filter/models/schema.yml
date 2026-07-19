@@ -1,0 +1,39 @@
+version: 2
+
+models:
+  - name: int_crm_accounts_incremental
+    description: >
+      Current CRM account rows merged incrementally using get_filter_val()
+      against {{ this }}._updated_at. Grain is country_code + account_id.
+    config:
+      contract:
+        enforced: false
+    columns:
+      - name: country_code
+        description: ISO-style country code for the account.
+        tests:
+          - not_null
+      - name: account_id
+        description: Stable account identifier from the CRM source.
+        tests:
+          - not_null
+      - name: account_status
+        description: Operational status code (active, closed, prospect, etc.).
+      - name: segment_code
+        description: Commercial segment / tier code.
+      - name: registered_at
+        description: Original registration timestamp.
+      - name: last_modified_at
+        description: Source last-modified timestamp.
+      - name: _hash_id
+        description: SCD hash / surrogate from the snapshot layer.
+      - name: _updated_at
+        description: Watermark column used by get_filter_val for incremental merges.
+        tests:
+          - not_null
+      - name: _valid_from
+        description: SCD valid-from timestamp.
+      - name: _valid_to
+        description: SCD valid-to timestamp; null means current.
+      - name: _valid_flag
+        description: True when this is the current version (valid_to is null).
