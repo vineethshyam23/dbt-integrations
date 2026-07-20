@@ -75,9 +75,10 @@ Example: `feature/dbt-01-incremental-filter`
 | # | Pattern | Location |
 |---|---------|----------|
 | 01 | Incremental filter macro (`get_filter_val`) | [`examples/01-incremental-filter/`](examples/01-incremental-filter/) |
+| 02 | Staging model + tests YAML (CRM accounts) | [`examples/02-staging-with-tests/`](examples/02-staging-with-tests/) |
 
 See [`docs/PATTERN_BACKLOG.md`](docs/PATTERN_BACKLOG.md) for Done / Next.
 
 ## Status
 
-First pattern shipped. Further examples land one per weekly run (sanitized excerpts only).
+Two patterns shipped. Further examples land one per weekly run (sanitized excerpts only).
