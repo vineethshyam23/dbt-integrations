@@ -1,0 +1,44 @@
+version: 2
+
+models:
+  - name: stg_crm_accounts
+    description: >
+      Staging view of CRM accounts. Source-aligned (light rename / cast /
+      filter), with uniqueness on account_id. Use this as the first trusted
+      relation for CRM account joins — not the raw landing table.
+    columns:
+      - name: account_id
+        description: Stable CRM account primary key.
+        tests:
+          - not_null
+          - unique
+      - name: is_deleted
+        description: Soft-delete flag from the CRM.
+        tests:
+          - not_null
+      - name: account_name
+        description: Display name of the account.
+      - name: record_type_id
+        description: CRM record-type identifier.
+      - name: country_code
+        description: Operating / billing country code.
+        tests:
+          - not_null
+      - name: account_source
+        description: Acquisition source recorded on the account.
+      - name: channel_code
+        description: Commercial channel classification.
+      - name: created_at
+        description: Account create timestamp in the CRM.
+        tests:
+          - not_null
+      - name: system_modstamp
+        description: Last CRM system modification timestamp.
+      - name: is_test_data
+        description: Always false in this model (test rows filtered out).
+      - name: _create_ts
+        description: Warehouse create timestamp from the load job.
+      - name: _update_ts
+        description: Warehouse update timestamp; drives source freshness.
+        tests:
+          - not_null

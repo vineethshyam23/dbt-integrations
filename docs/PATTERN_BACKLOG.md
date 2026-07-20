@@ -7,12 +7,12 @@ Sanitized teaching patterns only. Never dump company `dwh/dbt` wholesale.
 | # | Pattern | Folder | Branch | Shipped |
 |---|---------|--------|--------|---------|
 | 01 | Incremental filter macro (`get_filter_val`) | `examples/01-incremental-filter/` + `macros/get_filter_val.sql` | `feature/dbt-01-incremental-filter` | 2026-07-19 |
+| 02 | Staging model + tests YAML (CRM accounts) | `examples/02-staging-with-tests/` | `feature/dbt-02-staging-with-tests` | 2026-07-20 |
 
 ## Next candidates
 
 | # | Pattern | Suggested folder / branch | Notes |
 |---|---------|---------------------------|-------|
-| 02 | Staging model + tests YAML (generic CRM/ERP source) | `examples/02-staging-with-tests/` / `feature/dbt-02-staging-with-tests` | Source freshness, not_null, unique |
 | 03 | Dataset / materialization router macro | `examples/03-dataset-router-macro/` / `feature/dbt-03-dataset-router-macro` | From `dataset_router` / `project_materialization_router` |
 | 04 | Intermediate enrichment join | `examples/04-intermediate-enrichment/` / `feature/dbt-04-intermediate-enrichment` | Leads / enrichment style join |
 | 05 | Mart with model contract | `examples/05-mart-with-contract/` / `feature/dbt-05-mart-with-contract` | Grain + contract YAML |
