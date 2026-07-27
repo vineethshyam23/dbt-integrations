@@ -52,8 +52,7 @@ env vars keep CI / Airflow runners in control of physical locations.
 
 ## Sanitization notes
 
-- Real GCP project IDs (`hd-dwh-stream-*`) → `your-gcp-project` /
-  `your-gcp-project-dev`.
+- Company GCP project IDs → `your-gcp-project` / `your-gcp-project-dev`.
 - Company trusted / landing dataset names → generic `staging` / `intermediate` /
   `marts`.
 - Snapshot source renamed to generic CRM; no PII columns.
