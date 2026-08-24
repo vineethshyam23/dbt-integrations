@@ -1,0 +1,70 @@
+version: 2
+
+sources:
+  - name: crm
+    database: your-gcp-project
+    schema: staging
+    description: >
+      Generic CRM landing tables used by the enrichment intermediate.
+      Activities arrive via a thin staging model; account / user / task
+      dimensions are joined here to resolve an external account key.
+    tables:
+      - name: crm_activities
+        description: >
+          Activity / email metadata extract. Operational columns only;
+          mailbox addresses and body text are intentionally omitted here.
+        columns:
+          - name: id
+            description: Activity message primary key.
+          - name: activity_id
+            description: Parent activity / task id.
+          - name: related_to_id
+            description: Related CRM object id (often an account).
+          - name: subject
+            description: Activity subject line (non-PII operational text).
+          - name: message_date
+            description: Source message timestamp.
+          - name: created_by_id
+            description: CRM user who created the activity.
+          - name: has_attachment
+            description: Whether an attachment was present.
+          - name: is_bounced
+            description: Bounce flag from the CRM.
+          - name: message_identifier
+            description: Stable message identifier from the CRM.
+          - name: load_timestamp
+            description: Warehouse load timestamp.
+          - name: created_at
+            description: CRM create timestamp.
+
+      - name: crm_account
+        description: Account master. Grain one row per account_id.
+        columns:
+          - name: id
+            description: CRM account primary key.
+          - name: external_uid
+            description: Stable external account identifier for ERP sync.
+          - name: person_contact_id
+            description: Contact id when the account is a person-account.
+          - name: is_deleted
+            description: Soft-delete flag from the CRM.
+          - name: _update_ts
+            description: Warehouse load update timestamp.
+
+      - name: crm_user
+        description: CRM user dimension (activity authors).
+        columns:
+          - name: id
+            description: CRM user primary key.
+          - name: is_active
+            description: Whether the user is still active.
+
+      - name: crm_task
+        description: Task / activity header linked to activities and accounts.
+        columns:
+          - name: id
+            description: Task primary key (matches activity_id on the message row).
+          - name: account_id
+            description: Account related to the task, when populated.
+          - name: who_id
+            description: Contact or lead id related to the task.
