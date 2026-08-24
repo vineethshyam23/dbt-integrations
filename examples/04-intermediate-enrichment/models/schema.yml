@@ -1,0 +1,52 @@
+version: 2
+
+models:
+  - name: stg_crm_activities
+    description: >
+      Staging view of CRM activity metadata. Ids and flags only — no email
+      addresses or body text.
+    columns:
+      - name: activity_message_id
+        description: Primary key of the activity message row.
+        tests:
+          - not_null
+      - name: activity_id
+        description: Parent activity / task id used for enrichment joins.
+        tests:
+          - not_null
+      - name: related_to_id
+        description: CRM object id the activity is related to (often an account).
+      - name: load_timestamp
+        description: Warehouse load timestamp for the activity extract.
+
+  - name: int_crm_activities_enriched
+    description: >
+      Intermediate enrichment of CRM activities with account and task
+      dimensions. Resolves a single external_id for downstream ERP sync.
+      Grain is one row per (activity_message_id, activity_id).
+    columns:
+      - name: activity_message_id
+        description: Activity message primary key.
+        tests:
+          - not_null
+      - name: activity_id
+        description: Parent activity / task id.
+        tests:
+          - not_null
+      - name: related_account_uid
+        description: external_uid from the account matched on related_to_id.
+      - name: task_account_id
+        description: Account id from the related task, when present.
+      - name: who_account_uid
+        description: external_uid from the person-account matched via task.who_id.
+      - name: external_id
+        description: >
+          Coalesced sync key — related account uid, then related_to_id,
+          then who-account uid. Null means the activity could not be
+          attributed; do not invent a key downstream.
+        tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: author_is_active
+        description: Whether the creating user is still active in the CRM.
