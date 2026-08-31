@@ -1,0 +1,189 @@
+# Model contract for mart_erp_invoices (dbt YAML)
+# Teaching shape: draft contract with enforced: false, typed columns, SLA meta.
+# Flip enforced to true only after CI proves types match and consumers agree.
+
+version: 2
+
+models:
+  - name: int_erp_invoices
+    description: >
+      Intermediate ERP invoice history with validity columns.
+      Grain: invoice line version (SCD-like). Not the consumer contract surface.
+    columns:
+      - name: erp_line_id
+        description: ERP invoice line identifier
+        data_type: int64
+      - name: erp_invoice_id
+        description: ERP invoice identifier
+        data_type: int64
+      - name: _valid_flag
+        description: true when this version is current
+        data_type: boolean
+
+  - name: mart_erp_invoices
+    description: >
+      Current ERP invoice lines for finance / export consumers.
+      Grain: invoice line (erp_line_id, erp_invoice_id, product_code).
+      Uniqueness on that grain may still be deferred while SCD duplicates
+      exist upstream — document the deferral in the contract meta.
+    config:
+      contract:
+        enforced: false
+      meta:
+        data_contract:
+          contract_name: mart_erp_invoices
+          version: "1.0.0"
+          status: draft
+          bigquery_table: your-gcp-project.marts.mart_erp_invoices
+          ownership:
+            owner: data-platform
+            managed_by: data-platform
+            data_steward: finance-data-steward
+          raci:
+            responsible: data-platform
+            accountable: data-platform
+            consulted:
+              - finance
+              - export-platform
+            informed:
+              - data-operations
+          consumers:
+            - name: export-platform
+              use_case: Daily bulk export of invoice lines for country finance systems
+            - name: finance
+              use_case: Reporting, collections support, and variance checks
+          sla:
+            update_frequency: daily
+            max_latency_minutes: 2160
+            availability_percent: 99.0
+            support_hours: "Mon-Fri 09:00-18:00 local"
+            incident_response_time: "4 hours"
+          change_policy:
+            breaking_change_notice_days: 14
+            approval_required_from:
+              - data-platform
+              - affected-consumers
+            versioning_strategy: semantic
+            deprecation_period_days: 30
+          business_keys:
+            - erp_line_id
+            - erp_invoice_id
+            - product_code
+          freshness:
+            field: _update_ts
+            warn_after_hours: 36
+            error_after_hours: 48
+          tags:
+            - erp
+            - invoices
+            - finance
+            - daily
+
+    columns:
+      - name: erp_line_id
+        description: ERP invoice line identifier
+        data_type: int64
+        data_tests:
+          - not_null
+      - name: erp_invoice_id
+        description: ERP invoice identifier
+        data_type: int64
+        data_tests:
+          - not_null
+      - name: establishment_id
+        description: Establishment / location identifier
+        data_type: string
+      - name: company_partner_id
+        description: Company partner identifier in ERP
+        data_type: int64
+      - name: postal_code
+        description: Postal / ZIP code
+        data_type: string
+      - name: country_code
+        description: Two-letter ISO country code (export scoped example)
+        data_type: string
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ["FR", "ES"]
+      - name: customer_external_id
+        description: External customer identifier used by finance consumers
+        data_type: string
+      - name: invoice_partner_name
+        description: Display name of the invoice partner
+        data_type: string
+      - name: commercial_partner_name
+        description: Commercial partner name
+        data_type: string
+      - name: tax_id
+        description: Partner tax / VAT identifier (handle as sensitive downstream)
+        data_type: string
+      - name: booking_date
+        description: Invoice booking date
+        data_type: date
+        data_tests:
+          - not_null
+      - name: invoice_date_due
+        description: Invoice due date
+        data_type: date
+      - name: parent_bill
+        description: Parent bill reference
+        data_type: string
+      - name: move_type
+        description: ERP move / invoice type
+        data_type: string
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ["out_invoice", "out_refund"]
+      - name: payment_status
+        description: Payment status of the invoice
+        data_type: string
+        data_tests:
+          - accepted_values:
+              arguments:
+                values:
+                  - in_payment
+                  - not_paid
+                  - paid
+                  - partial
+                  - reversed
+      - name: paid_on
+        description: Date the invoice was paid
+        data_type: date
+      - name: parent_state
+        description: Parent invoice state
+        data_type: string
+      - name: product_code
+        description: Product code on the invoice line (nullable tolerated)
+        data_type: string
+      - name: product_is_setup
+        description: Whether the product is a setup / one-time fee product
+        data_type: boolean
+      - name: price_adjustment
+        description: Price adjustment details
+        data_type: string
+      - name: discount_code
+        description: Discount code applied
+        data_type: string
+      - name: net_price_eur
+        description: Net price in EUR
+        data_type: float64
+        data_tests:
+          - not_null
+      - name: gross_price_local
+        description: Gross price in local currency
+        data_type: float64
+      - name: _update_ts
+        description: Timestamp of last update in the mart
+        data_type: timestamp
+      - name: _valid_from
+        description: Record validity start timestamp
+        data_type: timestamp
+      - name: _valid_to
+        description: Record validity end timestamp
+        data_type: timestamp
+      - name: _valid_flag
+        description: Whether the record is currently valid (always true in mart)
+        data_type: boolean

@@ -8,3 +8,4 @@ Small, complete pattern samples (SQL + YAML + docs) that demonstrate one idea en
 | 02 | Staging model + tests YAML (CRM accounts) | [02-staging-with-tests](./02-staging-with-tests/) |
 | 03 | Dataset / materialization router macro | [03-dataset-router-macro](./03-dataset-router-macro/) |
 | 04 | Intermediate enrichment join (CRM activities) | [04-intermediate-enrichment](./04-intermediate-enrichment/) |
+| 05 | Mart with model contract (ERP invoices) | [05-mart-with-contract](./05-mart-with-contract/) |

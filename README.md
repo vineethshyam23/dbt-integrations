@@ -78,9 +78,10 @@ Example: `feature/dbt-01-incremental-filter`
 | 02 | Staging model + tests YAML (CRM accounts) | [`examples/02-staging-with-tests/`](examples/02-staging-with-tests/) |
 | 03 | Dataset / materialization router macro | [`examples/03-dataset-router-macro/`](examples/03-dataset-router-macro/) |
 | 04 | Intermediate enrichment join (CRM activities) | [`examples/04-intermediate-enrichment/`](examples/04-intermediate-enrichment/) |
+| 05 | Mart with model contract (ERP invoices) | [`examples/05-mart-with-contract/`](examples/05-mart-with-contract/) |
 
 See [`docs/PATTERN_BACKLOG.md`](docs/PATTERN_BACKLOG.md) for Done / Next.
 
 ## Status
 
-Four patterns shipped. Further examples land one per weekly run (sanitized excerpts only).
+Five patterns shipped. Further examples land one per weekly run (sanitized excerpts only).
