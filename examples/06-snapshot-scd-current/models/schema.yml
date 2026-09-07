@@ -1,0 +1,71 @@
+version: 2
+
+models:
+  - name: stg_crm_product
+    description: Staging view of CRM products; test rows removed.
+    columns:
+      - name: product_id
+        description: CRM product primary key.
+        data_tests:
+          - not_null
+          - unique
+      - name: product_code
+        description: Stable SKU / catalog code.
+      - name: product_name
+        description: Display name.
+      - name: is_active
+        description: Whether the product is sellable.
+      - name: created_at
+        description: Source creation timestamp.
+      - name: system_modstamp
+        description: Source last-modified timestamp.
+
+  - name: int_crm_product
+    description: |
+      Full SCD history for CRM products. One row per version. Use
+      _valid_flag to identify the current version; do not assume uniqueness
+      on product_id in this table.
+    columns:
+      - name: product_id
+        description: CRM product primary key (not unique across versions).
+        data_tests:
+          - not_null
+      - name: _hash_id
+        description: dbt SCD row key (unique per version).
+        data_tests:
+          - not_null
+          - unique
+      - name: _valid_from
+        description: Inclusive start of this version window.
+      - name: _valid_to
+        description: Exclusive end; null when current.
+      - name: _valid_until
+        description: Coalesced end date (2099 sentinel for current rows).
+      - name: _valid_flag
+        description: True when dbt_valid_to is null (current version).
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [true, false]
+                quote: false
+
+  - name: crm_product_current
+    description: Current CRM product catalog only (_valid_flag = true).
+    columns:
+      - name: product_id
+        description: CRM product primary key (unique among current rows).
+        data_tests:
+          - not_null
+          - unique
+      - name: product_code
+        description: Stable SKU / catalog code.
+      - name: is_active
+        description: Whether the product is currently sellable.
+      - name: _valid_flag
+        description: Always true in this model by construction.
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [true]
+                quote: false

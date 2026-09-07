@@ -1,0 +1,29 @@
+version: 2
+
+sources:
+  - name: crm
+    description: Generic CRM landing tables (sanitized).
+    database: your-gcp-project
+    schema: raw_crm
+    tables:
+      - name: crm_product
+        description: Product catalog feed from CRM.
+        columns:
+          - name: id
+            description: Source product id.
+          - name: product_code
+            description: SKU / catalog code.
+          - name: name
+            description: Product display name.
+          - name: is_active
+            description: Active / sellable flag.
+          - name: created_date
+            description: Source creation timestamp.
+          - name: system_modstamp
+            description: Source last-modified timestamp.
+          - name: is_test_data
+            description: Test-row flag; filtered out in staging.
+        freshness:
+          warn_after: {count: 24, period: hour}
+          error_after: {count: 48, period: hour}
+        loaded_at_field: system_modstamp

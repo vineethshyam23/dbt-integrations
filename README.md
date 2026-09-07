@@ -79,9 +79,10 @@ Example: `feature/dbt-01-incremental-filter`
 | 03 | Dataset / materialization router macro | [`examples/03-dataset-router-macro/`](examples/03-dataset-router-macro/) |
 | 04 | Intermediate enrichment join (CRM activities) | [`examples/04-intermediate-enrichment/`](examples/04-intermediate-enrichment/) |
 | 05 | Mart with model contract (ERP invoices) | [`examples/05-mart-with-contract/`](examples/05-mart-with-contract/) |
+| 06 | Snapshot / SCD current-row filter (CRM products) | [`examples/06-snapshot-scd-current/`](examples/06-snapshot-scd-current/) |
 
 See [`docs/PATTERN_BACKLOG.md`](docs/PATTERN_BACKLOG.md) for Done / Next.
 
 ## Status
 
-Five patterns shipped. Further examples land one per weekly run (sanitized excerpts only).
+Six patterns shipped. Further examples land one per weekly run (sanitized excerpts only).
