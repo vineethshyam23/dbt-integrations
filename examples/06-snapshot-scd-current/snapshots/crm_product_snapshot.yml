@@ -1,0 +1,30 @@
+version: 2
+
+snapshots:
+  - name: crm_product_snapshot
+    description: |
+      SCD Type 2 snapshot of the CRM product catalog. Tracks product code,
+      name, and active flag over time. Current versions have dbt_valid_to null.
+    columns:
+      - name: product_id
+        description: CRM product primary key.
+        data_tests:
+          - not_null
+      - name: product_code
+        description: Stable SKU / catalog code.
+      - name: product_name
+        description: Display name at this version.
+      - name: is_active
+        description: Whether the product was sellable in this version.
+      - name: created_at
+        description: Source creation timestamp.
+      - name: system_modstamp
+        description: Source last-modified timestamp.
+      - name: dbt_scd_id
+        description: dbt-generated SCD row key.
+      - name: dbt_updated_at
+        description: When dbt last refreshed this snapshot row.
+      - name: dbt_valid_from
+        description: Inclusive start of this version window.
+      - name: dbt_valid_to
+        description: Exclusive end of this version window; null means current.

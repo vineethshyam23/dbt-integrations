@@ -9,3 +9,4 @@ Small, complete pattern samples (SQL + YAML + docs) that demonstrate one idea en
 | 03 | Dataset / materialization router macro | [03-dataset-router-macro](./03-dataset-router-macro/) |
 | 04 | Intermediate enrichment join (CRM activities) | [04-intermediate-enrichment](./04-intermediate-enrichment/) |
 | 05 | Mart with model contract (ERP invoices) | [05-mart-with-contract](./05-mart-with-contract/) |
+| 06 | Snapshot / SCD current-row filter (CRM products) | [06-snapshot-scd-current](./06-snapshot-scd-current/) |

@@ -11,13 +11,13 @@ Sanitized teaching patterns only. Never dump company `dwh/dbt` wholesale.
 | 03 | Dataset / materialization router macro | `examples/03-dataset-router-macro/` + `macros/generate_database_name.sql` + `macros/set_schema.sql` | `feature/dbt-03-dataset-router-macro` | 2026-07-27 |
 | 04 | Intermediate enrichment join (CRM activities) | `examples/04-intermediate-enrichment/` | `feature/dbt-04-intermediate-enrichment` | 2026-08-24 |
 | 05 | Mart with model contract (ERP invoices) | `examples/05-mart-with-contract/` | `feature/dbt-05-mart-with-contract` | 2026-08-31 |
+| 06 | Snapshot / SCD current-row filter (CRM products) | `examples/06-snapshot-scd-current/` | `feature/dbt-06-snapshot-scd-current` | 2026-09-07 |
 
 ## Next candidates
 
 | # | Pattern | Suggested folder / branch | Notes |
 |---|---------|---------------------------|-------|
-| 06 | Snapshot / SCD-adjacent current-row filter | `examples/06-snapshot-scd-current/` / `feature/dbt-06-snapshot-scd-current` | Pair with pattern 05 history stub; sanitize snapshot config |
-| 07 | Text-clean / normalize macro | `macros/` + `examples/07-text-clean-macro/` / `feature/dbt-07-text-clean-macro` | If reusable text macros exist in source |
+| 07 | Text-clean / normalize macro | `macros/` + `examples/07-text-clean-macro/` / `feature/dbt-07-text-clean-macro` | Source: `macros/hyd_v2_int.sql` (`hyd_v2_string` / email helpers) — sanitize salt/secrets out |
 | 08 | Unit-test style model test pattern | `tests/` + `examples/08-model-unit-tests/` / `feature/dbt-08-model-unit-tests` | Only if source has clear unit-test examples |
 
 ## Out of scope (other automations)
