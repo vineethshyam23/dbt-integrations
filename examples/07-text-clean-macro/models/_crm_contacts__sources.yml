@@ -1,0 +1,23 @@
+version: 2
+
+sources:
+  - name: crm
+    description: Generic CRM landing dataset (placeholder).
+    database: your-gcp-project
+    schema: raw_crm
+    tables:
+      - name: contacts
+        description: Contact master extract. Free-text notes may contain CR/LF.
+        columns:
+          - name: contact_id
+            description: Source primary key.
+          - name: account_id
+            description: Parent account key.
+          - name: email
+            description: Contact email (hashed in intermediate; never land raw in marts).
+          - name: status
+            description: Lifecycle status code.
+          - name: note
+            description: Free-text ops note; may include newlines from UI export.
+          - name: updated_at
+            description: Source last-modified timestamp.
