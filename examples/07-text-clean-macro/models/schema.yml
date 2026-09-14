@@ -1,0 +1,50 @@
+version: 2
+
+models:
+  - name: stg_crm_contacts
+    description: >
+      Thin CRM contact staging. Notes preserve line breaks as <br /> so ops
+      tools can re-render paragraphs; email is lowercased only (hash later).
+    columns:
+      - name: contact_id
+        description: Contact primary key.
+        tests:
+          - not_null
+          - unique
+      - name: account_id
+        description: Parent account key.
+        tests:
+          - not_null
+      - name: email
+        description: Lowercased email (staging only — do not publish raw).
+      - name: status
+        description: Lifecycle status as landed.
+      - name: note
+        description: Free-text with CR/LF converted to <br /> placeholders.
+      - name: updated_at
+        description: Source last-modified timestamp.
+
+  - name: int_crm_contacts
+    description: >
+      Intermediate contacts ready for joins. Text normalized; email stored as
+      salted MD5 hex + domain only. Set var email_hash_salt before running.
+    columns:
+      - name: contact_id
+        description: Contact primary key.
+        tests:
+          - not_null
+          - unique
+      - name: account_id
+        description: Parent account key.
+        tests:
+          - not_null
+      - name: email_hashed
+        description: Hex MD5 of salt + lower(email); empty when email missing.
+      - name: email_domain
+        description: Domain part after @; empty when missing.
+      - name: status
+        description: Status after normalize_text.
+      - name: note
+        description: Note after normalize_text (edge <br /> stripped).
+      - name: updated_at
+        description: Source last-modified timestamp.

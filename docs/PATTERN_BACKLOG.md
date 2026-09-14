@@ -12,13 +12,14 @@ Sanitized teaching patterns only. Never dump company `dwh/dbt` wholesale.
 | 04 | Intermediate enrichment join (CRM activities) | `examples/04-intermediate-enrichment/` | `feature/dbt-04-intermediate-enrichment` | 2026-08-24 |
 | 05 | Mart with model contract (ERP invoices) | `examples/05-mart-with-contract/` | `feature/dbt-05-mart-with-contract` | 2026-08-31 |
 | 06 | Snapshot / SCD current-row filter (CRM products) | `examples/06-snapshot-scd-current/` | `feature/dbt-06-snapshot-scd-current` | 2026-09-07 |
+| 07 | Text-clean / normalize macro | `examples/07-text-clean-macro/` + `macros/normalize_text.sql` | `feature/dbt-07-text-clean-macro` | 2026-09-14 |
 
 ## Next candidates
 
 | # | Pattern | Suggested folder / branch | Notes |
 |---|---------|---------------------------|-------|
-| 07 | Text-clean / normalize macro | `macros/` + `examples/07-text-clean-macro/` / `feature/dbt-07-text-clean-macro` | Source: `macros/hyd_v2_int.sql` (`hyd_v2_string` / email helpers) — sanitize salt/secrets out |
-| 08 | Unit-test style model test pattern | `tests/` + `examples/08-model-unit-tests/` / `feature/dbt-08-model-unit-tests` | Only if source has clear unit-test examples |
+| 08 | Unit-test style model test pattern | `tests/` + `examples/08-model-unit-tests/` / `feature/dbt-08-model-unit-tests` | Source has dbt `unit_tests:` (e.g. payment terminal audit / CMS models) — sanitize entity IDs heavily |
+| 09 | Composite / matching-engine key macro | `macros/` + `examples/09-composite-key-macro/` / `feature/dbt-09-composite-key-macro` | Source: `macros/matching_engine_id_composite_key.sql` — sanitize entity names |
 
 ## Out of scope (other automations)
 
