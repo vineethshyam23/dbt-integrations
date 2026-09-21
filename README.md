@@ -81,9 +81,10 @@ Example: `feature/dbt-01-incremental-filter`
 | 05 | Mart with model contract (ERP invoices) | [`examples/05-mart-with-contract/`](examples/05-mart-with-contract/) |
 | 06 | Snapshot / SCD current-row filter (CRM products) | [`examples/06-snapshot-scd-current/`](examples/06-snapshot-scd-current/) |
 | 07 | Text-clean / normalize macro | [`examples/07-text-clean-macro/`](examples/07-text-clean-macro/) + [`macros/normalize_text.sql`](macros/normalize_text.sql) |
+| 08 | Unit-test style model test pattern | [`examples/08-model-unit-tests/`](examples/08-model-unit-tests/) + [`tests/`](tests/) |
 
 See [`docs/PATTERN_BACKLOG.md`](docs/PATTERN_BACKLOG.md) for Done / Next.
 
 ## Status
 
-Seven patterns shipped. Further examples land one per weekly run (sanitized excerpts only).
+Eight patterns shipped. Further examples land one per weekly run (sanitized excerpts only).

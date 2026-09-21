@@ -11,3 +11,4 @@ Small, complete pattern samples (SQL + YAML + docs) that demonstrate one idea en
 | 05 | Mart with model contract (ERP invoices) | [05-mart-with-contract](./05-mart-with-contract/) |
 | 06 | Snapshot / SCD current-row filter (CRM products) | [06-snapshot-scd-current](./06-snapshot-scd-current/) |
 | 07 | Text-clean / normalize macro | [07-text-clean-macro](./07-text-clean-macro/) |
+| 08 | Unit-test style model test pattern | [08-model-unit-tests](./08-model-unit-tests/) |
