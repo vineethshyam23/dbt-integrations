@@ -82,9 +82,10 @@ Example: `feature/dbt-01-incremental-filter`
 | 06 | Snapshot / SCD current-row filter (CRM products) | [`examples/06-snapshot-scd-current/`](examples/06-snapshot-scd-current/) |
 | 07 | Text-clean / normalize macro | [`examples/07-text-clean-macro/`](examples/07-text-clean-macro/) + [`macros/normalize_text.sql`](macros/normalize_text.sql) |
 | 08 | Unit-test style model test pattern | [`examples/08-model-unit-tests/`](examples/08-model-unit-tests/) + [`tests/`](tests/) |
+| 09 | Composite match-key macro | [`examples/09-composite-key-macro/`](examples/09-composite-key-macro/) + [`macros/composite_match_key.sql`](macros/composite_match_key.sql) |
 
 See [`docs/PATTERN_BACKLOG.md`](docs/PATTERN_BACKLOG.md) for Done / Next.
 
 ## Status
 
-Eight patterns shipped. Further examples land one per weekly run (sanitized excerpts only).
+Nine patterns shipped. Further examples land one per weekly run (sanitized excerpts only).

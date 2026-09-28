@@ -1,0 +1,39 @@
+version: 2
+
+models:
+  - name: stg_entity_match_results
+    description: >
+      Staging view over pairwise CRM↔ERP match candidates. Adds composite_key
+      (MD5 hex of id_source_1 || id_source_2) for snapshot unique_key arrays
+      and later joins. Does not enforce uniqueness — landing can replay runs.
+    columns:
+      - name: run_id
+        description: Matching job run identifier
+        tests:
+          - not_null
+      - name: country_code
+        description: ISO country code for the match batch
+      - name: source_1
+        description: Left system label
+      - name: source_2
+        description: Right system label
+      - name: id_source_1
+        description: Identifier from source_1 (cast to string)
+      - name: id_source_2
+        description: Identifier from source_2 (cast to string)
+      - name: match_type
+        description: Rule or algorithm family
+      - name: match_quality
+        description: Quality bucket / score label
+      - name: fm_mean
+        description: Mean fuzzy score across compared fields
+      - name: source_create_ts
+        description: Create timestamp from the matching job
+        tests:
+          - not_null
+      - name: composite_key
+        description: >
+          Null-safe MD5 hex of (id_source_1, id_source_2). Stable across
+          type coercion and null sides. Used in snapshot unique_key.
+        tests:
+          - not_null

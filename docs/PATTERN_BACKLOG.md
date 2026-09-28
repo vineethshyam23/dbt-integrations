@@ -14,12 +14,12 @@ Sanitized teaching patterns only. Never dump company `dwh/dbt` wholesale.
 | 06 | Snapshot / SCD current-row filter (CRM products) | `examples/06-snapshot-scd-current/` | `feature/dbt-06-snapshot-scd-current` | 2026-09-07 |
 | 07 | Text-clean / normalize macro | `examples/07-text-clean-macro/` + `macros/normalize_text.sql` | `feature/dbt-07-text-clean-macro` | 2026-09-14 |
 | 08 | Unit-test style model test pattern | `tests/` + `examples/08-model-unit-tests/` | `feature/dbt-08-model-unit-tests` | 2026-09-21 |
+| 09 | Composite / matching-engine key macro | `examples/09-composite-key-macro/` + `macros/composite_match_key.sql` | `feature/dbt-09-composite-key-macro` | 2026-09-28 |
 
 ## Next candidates
 
 | # | Pattern | Suggested folder / branch | Notes |
 |---|---------|---------------------------|-------|
-| 09 | Composite / matching-engine key macro | `macros/` + `examples/09-composite-key-macro/` / `feature/dbt-09-composite-key-macro` | Source: `macros/matching_engine_id_composite_key.sql` — sanitize entity names |
 | 10 | Staging envelope parse + unit test (CMS events) | `examples/10-staging-envelope-parse/` / `feature/dbt-10-staging-envelope-parse` | Source has Pub/Sub envelope staging with `unit_tests:` — keep separate from audit unit-test pattern |
 
 ## Out of scope (other automations)

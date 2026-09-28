@@ -1,0 +1,39 @@
+version: 2
+
+sources:
+  - name: raw_entity_match
+    description: >
+      Landing dataset for pairwise entity-match results (CRM account id vs
+      ERP partner id). Replace database/schema with your project values.
+    database: your-gcp-project
+    schema: raw_match
+    tables:
+      - name: entity_match_results
+        description: >
+          One candidate match row per run. Loaded by an upstream matching job;
+          staging adds a stable composite_key for snapshots and joins.
+        columns:
+          - name: run_id
+            description: Matching job run identifier
+            tests:
+              - not_null
+          - name: country_code
+            description: ISO country code for the match batch
+          - name: source_1
+            description: Left system label (e.g. crm)
+          - name: source_2
+            description: Right system label (e.g. erp)
+          - name: id_source_1
+            description: Identifier from source_1
+          - name: id_source_2
+            description: Identifier from source_2
+          - name: match_quality
+            description: Ordinal / score bucket from the matching engine
+          - name: match_type
+            description: Rule or algorithm family that produced the pair
+          - name: fm_mean
+            description: Mean fuzzy score across compared fields (0-1)
+          - name: created_at
+            description: Row create timestamp from the matching job
+            tests:
+              - not_null
