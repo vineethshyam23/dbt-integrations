@@ -1,0 +1,24 @@
+version: 2
+
+sources:
+  - name: cms_events
+    description: >
+      Pub/Sub BigQuery subscription landing table for CMS event envelopes.
+      Partitioned by DATE(publish_time); short partition retention is typical
+      for streaming landings (keep only what incremental models need).
+    database: your-gcp-project
+    schema: staging
+    tables:
+      - name: cms_events_raw
+        description: Raw Pub/Sub payload JSON in column `data`.
+        columns:
+          - name: data
+            description: Full envelope JSON (type, operation, timestamp, payload).
+          - name: message_id
+            description: Pub/Sub message id; use as incremental anti-join key.
+          - name: publish_time
+            description: Pub/Sub publish timestamp; incremental watermark.
+          - name: subscription_name
+            description: Subscription resource name (ops metadata).
+          - name: attributes
+            description: Pub/Sub attributes JSON or empty.

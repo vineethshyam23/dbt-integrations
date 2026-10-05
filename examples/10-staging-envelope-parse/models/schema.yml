@@ -1,0 +1,52 @@
+version: 2
+
+models:
+  - name: stg_cms_events_raw
+    description: >
+      Parsed Pub/Sub CMS event envelope. One row per message_id.
+      Downstream typed models filter on msg_type and unpack payload JSON.
+    columns:
+      - name: message_id
+        description: Pub/Sub message id (grain).
+        tests:
+          - not_null
+          - unique
+      - name: publish_time
+        description: Broker publish timestamp; incremental watermark.
+        tests:
+          - not_null
+      - name: msg_type
+        description: Envelope discriminator (Event / BusinessUnit / IdMapping).
+        tests:
+          - accepted_values:
+              values: ['Event', 'BusinessUnit', 'IdMapping']
+              config:
+                severity: warn
+      - name: operation
+        description: Envelope operation verb (e.g. log, upsert).
+      - name: envelope_ts
+        description: Producer timestamp from the envelope JSON.
+      - name: payload
+        description: JSON object string of $.payload for typed unpack later.
+
+unit_tests:
+  - name: stg_cms_events_raw_parses_event
+    model: stg_cms_events_raw
+    given:
+      - input: source('cms_events', 'cms_events_raw')
+        rows:
+          - {
+              data: '{"type":"Event","payload":{"establishmentId":"est_demo_001","eventType":"reply_review"},"operation":"log","timestamp":"2026-08-28T11:32:17.755Z"}',
+              subscription_name: 'projects/your-gcp-project/subscriptions/cms-events-bq',
+              message_id: '1',
+              publish_time: '2026-08-28 11:32:17',
+              attributes: null
+            }
+    expect:
+      rows:
+        - {
+            message_id: '1',
+            msg_type: 'Event',
+            operation: 'log',
+            envelope_ts: '2026-08-28 11:32:17.755 UTC'
+          }

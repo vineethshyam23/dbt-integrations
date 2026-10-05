@@ -13,3 +13,4 @@ Small, complete pattern samples (SQL + YAML + docs) that demonstrate one idea en
 | 07 | Text-clean / normalize macro | [07-text-clean-macro](./07-text-clean-macro/) |
 | 08 | Unit-test style model test pattern | [08-model-unit-tests](./08-model-unit-tests/) |
 | 09 | Composite match-key macro | [09-composite-key-macro](./09-composite-key-macro/) |
+| 10 | Staging envelope parse + unit test (CMS events) | [10-staging-envelope-parse](./10-staging-envelope-parse/) |
