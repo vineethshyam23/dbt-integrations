@@ -84,9 +84,10 @@ Example: `feature/dbt-01-incremental-filter`
 | 08 | Unit-test style model test pattern | [`examples/08-model-unit-tests/`](examples/08-model-unit-tests/) + [`tests/`](tests/) |
 | 09 | Composite match-key macro | [`examples/09-composite-key-macro/`](examples/09-composite-key-macro/) + [`macros/composite_match_key.sql`](macros/composite_match_key.sql) |
 | 10 | Staging envelope parse + unit test (CMS events) | [`examples/10-staging-envelope-parse/`](examples/10-staging-envelope-parse/) |
+| 11 | Pub/Sub resource router + error sink | [`examples/11-resource-router-error-sink/`](examples/11-resource-router-error-sink/) + [`macros/parse_flexible_timestamp.sql`](macros/parse_flexible_timestamp.sql) |
 
 See [`docs/PATTERN_BACKLOG.md`](docs/PATTERN_BACKLOG.md) for Done / Next.
 
 ## Status
 
-Ten patterns shipped. Further examples land one per weekly run (sanitized excerpts only).
+Eleven patterns shipped. Further examples land one per weekly run (sanitized excerpts only).

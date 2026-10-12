@@ -1,0 +1,300 @@
+version: 2
+
+models:
+  - name: stg_marketplace_events_raw
+    description: >
+      Parsed Pub/Sub marketplace envelope; one row per message_id.
+      Routes @type into a stable resource bucket for typed intermediates.
+    columns:
+      - name: message_id
+        tests:
+          - not_null
+          - unique
+      - name: resource
+        tests:
+          - accepted_values:
+              arguments:
+                values:
+                  - order
+                  - venue
+                  - menu
+                  - service
+                  - disabledservice
+                  - error
+      - name: raw_resource
+      - name: is_valid
+      - name: source_timestamp
+      - name: order_date
+      - name: fulfillment_expires_at
+
+  - name: int_marketplace_events_error
+    description: >
+      Incremental monitoring sink for malformed or unsupported marketplace
+      messages. Merge on message_id; watermark on publish_time.
+    columns:
+      - name: message_id
+        tests:
+          - not_null
+          - unique
+      - name: error_reason
+        tests:
+          - accepted_values:
+              arguments:
+                values:
+                  - invalid_json
+                  - unsupported_resource
+                  - invalid_timestamp
+
+unit_tests:
+  - name: stg_marketplace_events_raw_routes_supported_resources
+    model: stg_marketplace_events_raw
+    given:
+      - input: source('marketplace_events', 'marketplace_events_raw')
+        rows:
+          - {
+              message_id: 'msg-order',
+              publish_time: '2026-08-31 10:00:00',
+              subscription_name: 'projects/your-gcp-project/subscriptions/marketplace-events-bq',
+              attributes: null,
+              data: '{"timestamp":"2026-08-31T10:00:00.123Z","orderDate":"2026-08-31T10:01:00.123Z"}'
+            }
+          - {
+              message_id: 'msg-venue',
+              publish_time: '2026-08-31 10:00:01',
+              subscription_name: 'projects/your-gcp-project/subscriptions/marketplace-events-bq',
+              attributes: null,
+              data: '{"@type":"Venue","timestamp":"2026-08-31T10:00:01.123Z"}'
+            }
+          - {
+              message_id: 'msg-menu',
+              publish_time: '2026-08-31 10:00:02',
+              subscription_name: 'projects/your-gcp-project/subscriptions/marketplace-events-bq',
+              attributes: null,
+              data: '{"@type":"Menu","timestamp":"2026-08-31T10:00:02.123Z"}'
+            }
+          - {
+              message_id: 'msg-service',
+              publish_time: '2026-08-31 10:00:03',
+              subscription_name: 'projects/your-gcp-project/subscriptions/marketplace-events-bq',
+              attributes: null,
+              data: '{"@type":"Service","timestamp":"2026-08-31T10:00:03.123Z"}'
+            }
+          - {
+              message_id: 'msg-disabledservice',
+              publish_time: '2026-08-31 10:00:04',
+              subscription_name: 'projects/your-gcp-project/subscriptions/marketplace-events-bq',
+              attributes: null,
+              data: '{"@type":"DisabledService","timestamp":"2026-08-31T10:00:04.123Z"}'
+            }
+    expect:
+      rows:
+        - {message_id: 'msg-order', raw_resource: null, resource: 'order', is_valid: true}
+        - {message_id: 'msg-venue', raw_resource: 'venue', resource: 'venue', is_valid: true}
+        - {message_id: 'msg-menu', raw_resource: 'menu', resource: 'menu', is_valid: true}
+        - {message_id: 'msg-service', raw_resource: 'service', resource: 'service', is_valid: true}
+        - {message_id: 'msg-disabledservice', raw_resource: 'disabledservice', resource: 'disabledservice', is_valid: true}
+
+  - name: stg_marketplace_events_raw_marks_invalid_json
+    model: stg_marketplace_events_raw
+    given:
+      - input: source('marketplace_events', 'marketplace_events_raw')
+        rows:
+          - {
+              message_id: 'msg-invalid-json',
+              publish_time: '2026-08-31 11:00:00',
+              subscription_name: 'projects/your-gcp-project/subscriptions/marketplace-events-bq',
+              attributes: null,
+              data: '{"@type":"Venue"'
+            }
+    expect:
+      rows:
+        - {
+            message_id: 'msg-invalid-json',
+            raw_resource: null,
+            resource: 'error',
+            is_valid: false,
+            source_timestamp: null,
+            order_date: null,
+            fulfillment_expires_at: null
+          }
+
+  - name: stg_marketplace_events_raw_routes_unknown_type_to_error
+    model: stg_marketplace_events_raw
+    given:
+      - input: source('marketplace_events', 'marketplace_events_raw')
+        rows:
+          - {
+              message_id: 'msg-unknown-type',
+              publish_time: '2026-08-31 12:00:00',
+              subscription_name: 'projects/your-gcp-project/subscriptions/marketplace-events-bq',
+              attributes: null,
+              data: '{"@type":"Coupon","timestamp":"2026-08-31T12:00:00.000Z"}'
+            }
+    expect:
+      rows:
+        - {
+            message_id: 'msg-unknown-type',
+            raw_resource: 'coupon',
+            resource: 'error',
+            is_valid: true
+          }
+
+  - name: stg_marketplace_events_raw_parses_supported_timestamp_formats
+    model: stg_marketplace_events_raw
+    given:
+      - input: source('marketplace_events', 'marketplace_events_raw')
+        rows:
+          - {
+              message_id: 'msg-ts-plain',
+              publish_time: '2026-08-31 13:00:00',
+              subscription_name: 'projects/your-gcp-project/subscriptions/marketplace-events-bq',
+              attributes: null,
+              data: '{"timestamp":"2021-05-27 12:34:56","orderDate":"2021-05-27 12:34:56","fulfillment":{"expiresAt":"2021-05-27 12:34:56"}}'
+            }
+          - {
+              message_id: 'msg-ts-rfc3339',
+              publish_time: '2026-08-31 13:00:01',
+              subscription_name: 'projects/your-gcp-project/subscriptions/marketplace-events-bq',
+              attributes: null,
+              data: '{"timestamp":"2026-08-31T10:00:00.123Z","orderDate":"2026-08-31T10:00:00.123Z","fulfillment":{"expiresAt":"2026-08-31T10:00:00.123Z"}}'
+            }
+          - {
+              message_id: 'msg-ts-millis',
+              publish_time: '2026-08-31 13:00:02',
+              subscription_name: 'projects/your-gcp-project/subscriptions/marketplace-events-bq',
+              attributes: null,
+              data: '{"timestamp":"1622118896000","orderDate":"1622118896000","fulfillment":{"expiresAt":"1622118896000"}}'
+            }
+    expect:
+      rows:
+        - {
+            message_id: 'msg-ts-plain',
+            source_timestamp: '2021-05-27 12:34:56 UTC',
+            order_date: '2021-05-27 12:34:56 UTC',
+            fulfillment_expires_at: '2021-05-27 12:34:56 UTC'
+          }
+        - {
+            message_id: 'msg-ts-rfc3339',
+            source_timestamp: '2026-08-31 10:00:00.123 UTC',
+            order_date: '2026-08-31 10:00:00.123 UTC',
+            fulfillment_expires_at: '2026-08-31 10:00:00.123 UTC'
+          }
+        - {
+            message_id: 'msg-ts-millis',
+            source_timestamp: '2021-05-27 12:34:56 UTC',
+            order_date: '2021-05-27 12:34:56 UTC',
+            fulfillment_expires_at: '2021-05-27 12:34:56 UTC'
+          }
+
+  - name: int_marketplace_events_error_classifies_supported_error_reasons
+    model: int_marketplace_events_error
+    overrides:
+      macros:
+        is_incremental: false
+    given:
+      - input: ref('stg_marketplace_events_raw')
+        rows:
+          - {
+              message_id: 'msg-invalid-json',
+              publish_time: '2026-08-31 11:00:00',
+              subscription_name: 'projects/your-gcp-project/subscriptions/marketplace-events-bq',
+              data: '{"@type":"Venue"',
+              raw_resource: null,
+              resource: 'error',
+              is_valid: false,
+              source_timestamp_raw: null,
+              source_timestamp: null,
+              order_date_raw: null,
+              order_date: null,
+              fulfillment_expires_at_raw: null,
+              fulfillment_expires_at: null
+            }
+          - {
+              message_id: 'msg-unknown-type',
+              publish_time: '2026-08-31 12:00:00',
+              subscription_name: 'projects/your-gcp-project/subscriptions/marketplace-events-bq',
+              data: '{"@type":"Coupon","timestamp":"2026-08-31T12:00:00.000Z"}',
+              raw_resource: 'coupon',
+              resource: 'error',
+              is_valid: true,
+              source_timestamp_raw: '2026-08-31T12:00:00.000Z',
+              source_timestamp: '2026-08-31 12:00:00 UTC',
+              order_date_raw: null,
+              order_date: null,
+              fulfillment_expires_at_raw: null,
+              fulfillment_expires_at: null
+            }
+          - {
+              message_id: 'msg-ts-out-of-range',
+              publish_time: '2026-08-31 14:00:00',
+              subscription_name: 'projects/your-gcp-project/subscriptions/marketplace-events-bq',
+              data: '{"timestamp":"253402300800000"}',
+              raw_resource: null,
+              resource: 'order',
+              is_valid: true,
+              source_timestamp_raw: '253402300800000',
+              source_timestamp: null,
+              order_date_raw: null,
+              order_date: null,
+              fulfillment_expires_at_raw: null,
+              fulfillment_expires_at: null
+            }
+      - input: this
+        rows: []
+    expect:
+      rows:
+        - {message_id: 'msg-invalid-json', error_reason: 'invalid_json'}
+        - {message_id: 'msg-unknown-type', error_reason: 'unsupported_resource'}
+        - {message_id: 'msg-ts-out-of-range', error_reason: 'invalid_timestamp'}
+
+  - name: int_marketplace_events_error_incremental_watermark_filters_old_rows
+    model: int_marketplace_events_error
+    overrides:
+      macros:
+        is_incremental: true
+    given:
+      - input: ref('stg_marketplace_events_raw')
+        rows:
+          - {
+              message_id: 'msg-before-watermark',
+              publish_time: '2026-08-31 10:59:59',
+              subscription_name: 'projects/your-gcp-project/subscriptions/marketplace-events-bq',
+              data: '{"@type":"Coupon","timestamp":"2026-08-31T10:59:59.000Z"}',
+              raw_resource: 'coupon',
+              resource: 'error',
+              is_valid: true,
+              source_timestamp_raw: '2026-08-31T10:59:59.000Z',
+              source_timestamp: '2026-08-31 10:59:59 UTC',
+              order_date_raw: null,
+              order_date: null,
+              fulfillment_expires_at_raw: null,
+              fulfillment_expires_at: null
+            }
+          - {
+              message_id: 'msg-inside-watermark',
+              publish_time: '2026-08-31 11:00:01',
+              subscription_name: 'projects/your-gcp-project/subscriptions/marketplace-events-bq',
+              data: '{"@type":"Coupon","timestamp":"2026-08-31T11:00:01.000Z"}',
+              raw_resource: 'coupon',
+              resource: 'error',
+              is_valid: true,
+              source_timestamp_raw: '2026-08-31T11:00:01.000Z',
+              source_timestamp: '2026-08-31 11:00:01 UTC',
+              order_date_raw: null,
+              order_date: null,
+              fulfillment_expires_at_raw: null,
+              fulfillment_expires_at: null
+            }
+      - input: this
+        rows:
+          - {
+              message_id: 'msg-existing-max',
+              publish_time: '2026-08-31 12:00:00',
+              subscription_name: 'projects/your-gcp-project/subscriptions/marketplace-events-bq',
+              data: '{"@type":"Coupon","timestamp":"2026-08-31T12:00:00.000Z"}',
+              raw_resource: 'coupon',
+              error_reason: 'unsupported_resource'
+            }
+    expect:
+      rows:
+        - {message_id: 'msg-inside-watermark', error_reason: 'unsupported_resource'}

@@ -1,0 +1,24 @@
+version: 2
+
+sources:
+  - name: marketplace_events
+    description: >
+      Pub/Sub BigQuery subscription landing table for marketplace catalog /
+      order stream messages. One mixed subscription; resource type lives in
+      the JSON payload (@type), not as a separate table.
+    database: your-gcp-project
+    schema: staging
+    tables:
+      - name: marketplace_events_raw
+        description: Raw Pub/Sub payload JSON in column data.
+        columns:
+          - name: subscription_name
+            description: Full subscription resource name.
+          - name: message_id
+            description: Pub/Sub message id; unique message key.
+          - name: publish_time
+            description: Pub/Sub publish timestamp.
+          - name: attributes
+            description: Pub/Sub attributes JSON or empty.
+          - name: data
+            description: Full marketplace event JSON payload.
