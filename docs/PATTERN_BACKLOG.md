@@ -16,12 +16,13 @@ Sanitized teaching patterns only. Never dump company `dwh/dbt` wholesale.
 | 08 | Unit-test style model test pattern | `tests/` + `examples/08-model-unit-tests/` | `feature/dbt-08-model-unit-tests` | 2026-09-21 |
 | 09 | Composite / matching-engine key macro | `examples/09-composite-key-macro/` + `macros/composite_match_key.sql` | `feature/dbt-09-composite-key-macro` | 2026-09-28 |
 | 10 | Staging envelope parse + unit test (CMS events) | `examples/10-staging-envelope-parse/` | `feature/dbt-10-staging-envelope-parse` | 2026-10-05 |
+| 11 | Pub/Sub resource router + error sink | `examples/11-resource-router-error-sink/` + `macros/parse_flexible_timestamp.sql` | `feature/dbt-11-resource-router-error-sink` | 2026-10-12 |
 
 ## Next candidates
 
 | # | Pattern | Suggested folder / branch | Notes |
 |---|---------|---------------------------|-------|
-| 11 | Pub/Sub resource router + error sink | `examples/11-resource-router-error-sink/` / `feature/dbt-11-resource-router-error-sink` | Source has OWG-style envelope that routes `@type` to resource buckets + incremental error quarantine — distinct from thin CMS parse (10) |
+| 12 | Nested JSON project / schema-spec macro | `examples/12-nested-json-project-macro/` / `feature/dbt-12-nested-json-project-macro` | Source has JSON projection helpers that unpack typed marketplace payloads after the router — distinct from routing (11) and thin parse (10) |
 
 ## Out of scope (other automations)
 
