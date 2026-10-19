@@ -15,3 +15,4 @@ Small, complete pattern samples (SQL + YAML + docs) that demonstrate one idea en
 | 09 | Composite match-key macro | [09-composite-key-macro](./09-composite-key-macro/) |
 | 10 | Staging envelope parse + unit test (CMS events) | [10-staging-envelope-parse](./10-staging-envelope-parse/) |
 | 11 | Pub/Sub resource router + error sink | [11-resource-router-error-sink](./11-resource-router-error-sink/) |
+| 12 | Nested JSON project / schema-spec macro | [12-nested-json-project-macro](./12-nested-json-project-macro/) |

@@ -1,0 +1,110 @@
+version: 2
+
+models:
+  - name: stg_marketplace_venues
+    description: >
+      Venue-only staging over marketplace landing. Filters @type = venue and
+      passes the raw JSON string to the typed intermediate.
+    columns:
+      - name: message_id
+        description: Pub/Sub message id (grain).
+        tests:
+          - not_null
+          - unique
+      - name: publish_time
+        description: Broker publish timestamp.
+        tests:
+          - not_null
+      - name: data
+        description: Raw JSON payload string for venue messages.
+        tests:
+          - not_null
+
+  - name: int_marketplace_venues
+    description: >
+      Incremental typed venue table. Columns come from
+      marketplace_venue_schema() via project_nested_json — not hand-written
+      json_value lists.
+    columns:
+      - name: message_id
+        description: Merge key; one row per message.
+        tests:
+          - not_null
+          - unique
+      - name: venue_id
+        description: Venue business id (@id / id alias coalesce).
+        tests:
+          - not_null
+      - name: publish_time
+        description: Broker timestamp used as incremental watermark.
+        tests:
+          - not_null
+      - name: source_timestamp
+        description: Event timestamp from payload (flexible parse).
+      - name: address
+        description: Nested STRUCT (country, locality, region, postal_code).
+      - name: geo
+        description: Nested STRUCT (latitude, longitude as FLOAT64).
+      - name: menu_refs
+        description: ARRAY of STRUCT linked menu ids from hasMenu.
+      - name: serves_cuisine
+        description: ARRAY of STRING cuisine labels.
+
+unit_tests:
+  - name: test_stg_marketplace_venues_keeps_venue_only
+    description: Non-venue and invalid JSON rows are dropped before projection.
+    model: stg_marketplace_venues
+    given:
+      - input: source('marketplace_events', 'marketplace_events_raw')
+        rows:
+          - {
+              message_id: "msg-venue-001",
+              publish_time: "2026-10-01 12:00:00",
+              data: '{"@id":"venue_demo_001","@type":"venue","name":"Demo Bistro"}'
+            }
+          - {
+              message_id: "msg-menu-001",
+              publish_time: "2026-10-01 12:00:01",
+              data: '{"@id":"menu_001","@type":"menu","name":"Lunch"}'
+            }
+          - {
+              message_id: "msg-bad-json",
+              publish_time: "2026-10-01 12:00:02",
+              data: '{"@type":"venue"'
+            }
+    expect:
+      rows:
+        - {
+            message_id: "msg-venue-001",
+            data: '{"@id":"venue_demo_001","@type":"venue","name":"Demo Bistro"}'
+          }
+
+  - name: test_int_marketplace_venues_projects_aliases
+    description: >
+      Fixture proves @id alias coalesce and partnerId path remap without
+      scanning the landing table. Nested STRUCT assertions are left to
+      warehouse / contract tests — unit fixture stays on scalars.
+    model: int_marketplace_venues
+    overrides:
+      macros:
+        is_incremental: false
+    given:
+      - input: ref('stg_marketplace_venues')
+        rows:
+          - {
+              message_id: "msg-venue-001",
+              publish_time: "2026-10-01 12:00:00",
+              data: '{"@id":"venue_demo_001","@type":"venue","name":"Demo Bistro","partnerId":"partner_demo","correlationId":"corr_001","operation":"UPSERT","version":"2","timestamp":"2026-10-01T12:00:00Z"}'
+            }
+    expect:
+      rows:
+        - {
+            message_id: "msg-venue-001",
+            venue_id: "venue_demo_001",
+            resource_type: "venue",
+            name: "Demo Bistro",
+            partner_id: "partner_demo",
+            correlation_id: "corr_001",
+            operation: "UPSERT",
+            version: "2"
+          }

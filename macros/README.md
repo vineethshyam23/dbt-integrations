@@ -10,3 +10,5 @@ Reusable Jinja/SQL helpers. Prefer small, documented macros over copy-paste SQL.
 | `normalize_text` (+ linebreak / email helpers) | Staging linebreak preserve, intermediate text normalize, salted email hash + domain | `examples/07-text-clean-macro/` |
 | `composite_match_key` | Null-safe MD5 hex key for a pair of source ids (snapshot unique_key / joins) | `examples/09-composite-key-macro/` |
 | `parse_flexible_timestamp` | Safe cast string / RFC3339 / epoch-millis timestamps; nulls out-of-range epochs | `examples/11-resource-router-error-sink/` |
+| `project_nested_json` (+ path / cast helpers) | Schema-spec driven JSON → typed columns (STRUCT / ARRAY / aliases) | `examples/12-nested-json-project-macro/` |
+| `marketplace_venue_schema` | Teaching venue schema-spec for `project_nested_json` | `examples/12-nested-json-project-macro/` |

@@ -17,12 +17,13 @@ Sanitized teaching patterns only. Never dump company `dwh/dbt` wholesale.
 | 09 | Composite / matching-engine key macro | `examples/09-composite-key-macro/` + `macros/composite_match_key.sql` | `feature/dbt-09-composite-key-macro` | 2026-09-28 |
 | 10 | Staging envelope parse + unit test (CMS events) | `examples/10-staging-envelope-parse/` | `feature/dbt-10-staging-envelope-parse` | 2026-10-05 |
 | 11 | Pub/Sub resource router + error sink | `examples/11-resource-router-error-sink/` + `macros/parse_flexible_timestamp.sql` | `feature/dbt-11-resource-router-error-sink` | 2026-10-12 |
+| 12 | Nested JSON project / schema-spec macro | `examples/12-nested-json-project-macro/` + `macros/project_nested_json.sql` + `macros/marketplace_venue_schema.sql` | `feature/dbt-12-nested-json-project-macro` | 2026-10-19 |
 
 ## Next candidates
 
 | # | Pattern | Suggested folder / branch | Notes |
 |---|---------|---------------------------|-------|
-| 12 | Nested JSON project / schema-spec macro | `examples/12-nested-json-project-macro/` / `feature/dbt-12-nested-json-project-macro` | Source has JSON projection helpers that unpack typed marketplace payloads after the router — distinct from routing (11) and thin parse (10) |
+| 13 | Nested section expand / unnest macro | `examples/13-nested-section-expand/` / `feature/dbt-13-nested-section-expand` | Source has section-expand helpers that flatten nested menu/section arrays after typed projection — distinct from the projector (12) |
 
 ## Out of scope (other automations)
 
