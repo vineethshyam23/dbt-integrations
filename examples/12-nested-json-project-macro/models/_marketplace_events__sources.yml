@@ -1,0 +1,27 @@
+version: 2
+
+sources:
+  - name: marketplace_events
+    description: >
+      Placeholder Pub/Sub → BigQuery landing for mixed marketplace resource
+      messages. Same conceptual source as pattern 11; this example only needs
+      venue-shaped JSON after routing.
+    database: your-gcp-project
+    schema: raw_marketplace
+    tables:
+      - name: marketplace_events_raw
+        description: >
+          One row per Pub/Sub message. `data` is the JSON body; broker
+          columns support incremental watermarks.
+        columns:
+          - name: message_id
+            description: Pub/Sub message id (grain).
+            tests:
+              - not_null
+              - unique
+          - name: publish_time
+            description: Broker publish timestamp.
+            tests:
+              - not_null
+          - name: data
+            description: Raw JSON payload as string.
