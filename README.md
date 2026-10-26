@@ -86,9 +86,10 @@ Example: `feature/dbt-01-incremental-filter`
 | 10 | Staging envelope parse + unit test (CMS events) | [`examples/10-staging-envelope-parse/`](examples/10-staging-envelope-parse/) |
 | 11 | Pub/Sub resource router + error sink | [`examples/11-resource-router-error-sink/`](examples/11-resource-router-error-sink/) + [`macros/parse_flexible_timestamp.sql`](macros/parse_flexible_timestamp.sql) |
 | 12 | Nested JSON project / schema-spec macro | [`examples/12-nested-json-project-macro/`](examples/12-nested-json-project-macro/) + [`macros/project_nested_json.sql`](macros/project_nested_json.sql) + [`macros/marketplace_venue_schema.sql`](macros/marketplace_venue_schema.sql) |
+| 13 | Nested section expand / unnest macro | [`examples/13-nested-section-expand/`](examples/13-nested-section-expand/) + [`macros/expand_nested_sections.sql`](macros/expand_nested_sections.sql) + [`macros/marketplace_menu_section_schema.sql`](macros/marketplace_menu_section_schema.sql) |
 
 See [`docs/PATTERN_BACKLOG.md`](docs/PATTERN_BACKLOG.md) for Done / Next.
 
 ## Status
 
-Twelve patterns shipped. Further examples land one per weekly run (sanitized excerpts only).
+Thirteen patterns shipped. Further examples land one per weekly run (sanitized excerpts only).

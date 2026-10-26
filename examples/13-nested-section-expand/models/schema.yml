@@ -1,0 +1,179 @@
+version: 2
+
+models:
+  - name: stg_marketplace_menus
+    description: >
+      Menu-only staging over marketplace landing. Filters @type = menu and
+      passes the raw JSON string to the section-expand intermediate.
+    columns:
+      - name: message_id
+        description: Pub/Sub message id (grain).
+        tests:
+          - not_null
+          - unique
+      - name: publish_time
+        description: Broker publish timestamp.
+        tests:
+          - not_null
+      - name: data
+        description: Raw JSON payload string for menu messages.
+        tests:
+          - not_null
+
+  - name: int_marketplace_menu_sections
+    description: >
+      Incremental section grain. Nested hasMenuSection descendants only
+      (roots omitted). Columns from marketplace_menu_section_schema via
+      project_nested_json after enrich_menu_section_json.
+    columns:
+      - name: row_id
+        description: Deterministic merge key (message + section + parent + ordinal).
+        tests:
+          - not_null
+          - unique
+      - name: section_id
+        description: Section business id (@id / id alias coalesce).
+        tests:
+          - not_null
+      - name: menu_id
+        description: Parent menu id from the message envelope.
+        tests:
+          - not_null
+      - name: parent_menu_section_id
+        description: Immediate parent section id (root id for first descendants).
+        tests:
+          - not_null
+      - name: message_id
+        description: Source Pub/Sub message id.
+        tests:
+          - not_null
+      - name: publish_time
+        description: Broker timestamp used as incremental watermark.
+        tests:
+          - not_null
+
+unit_tests:
+  - name: test_stg_marketplace_menus_keeps_menu_only
+    description: Non-menu and invalid JSON rows are dropped before expansion.
+    model: stg_marketplace_menus
+    given:
+      - input: source('marketplace_events', 'marketplace_events_raw')
+        rows:
+          - {
+              message_id: "msg-menu-001",
+              publish_time: "2026-10-01 12:00:00",
+              data: '{"@id":"menu_demo_001","@type":"menu","name":"Lunch"}'
+            }
+          - {
+              message_id: "msg-venue-001",
+              publish_time: "2026-10-01 12:00:01",
+              data: '{"@id":"venue_demo_001","@type":"venue","name":"Demo Bistro"}'
+            }
+          - {
+              message_id: "msg-bad-json",
+              publish_time: "2026-10-01 12:00:02",
+              data: '{"@type":"menu"'
+            }
+    expect:
+      rows:
+        - {
+            message_id: "msg-menu-001",
+            data: '{"@id":"menu_demo_001","@type":"menu","name":"Lunch"}'
+          }
+
+  - name: test_int_marketplace_menu_sections_omits_root
+    description: >
+      Nested menu emits descendant sections only. Root section id=sec_root
+      is walked for parenting but not emitted. Synthetic fixture — no
+      production venue names.
+    model: int_marketplace_menu_sections
+    overrides:
+      macros:
+        is_incremental: false
+    given:
+      - input: ref('stg_marketplace_menus')
+        rows:
+          - {
+              message_id: "msg-menu-section",
+              publish_time: "2026-10-01 12:00:00",
+              data: '{"@type":"menu","@id":"menu_demo_001","name":"Demo Lunch","timestamp":"2026-10-01T12:00:00Z","correlationId":"corr_demo_001","partnerId":"partner_demo","operation":"UPSERT","hasMenuSection":[{"@id":"sec_root","name":"Mains","hasMenuSection":[{"@id":"sec_child_a","name":"Pasta","hasMenuSection":[{"@id":"sec_leaf_a1","name":"Classic Pasta"},{"@id":"sec_leaf_a2","name":"Baked Pasta"}]},{"@id":"sec_child_b","name":"Grill","hasMenuSection":[{"@id":"sec_leaf_b1","name":"Steak"},{"@id":"sec_leaf_b2","name":"Skewers","hasMenuSection":[{"@id":"sec_deep_b2","name":"Spicy Skewers"}]}]}]}]}'
+            }
+    expect:
+      rows:
+        - {
+            section_id: "sec_child_a",
+            name: "Pasta",
+            menu_id: "menu_demo_001",
+            parent_menu_section_id: "sec_root",
+            correlation_id: "corr_demo_001",
+            operation: "UPSERT",
+            partner_id: "partner_demo",
+            source_message_id: "msg-menu-section",
+            message_id: "msg-menu-section"
+          }
+        - {
+            section_id: "sec_child_b",
+            name: "Grill",
+            menu_id: "menu_demo_001",
+            parent_menu_section_id: "sec_root",
+            correlation_id: "corr_demo_001",
+            operation: "UPSERT",
+            partner_id: "partner_demo",
+            source_message_id: "msg-menu-section",
+            message_id: "msg-menu-section"
+          }
+        - {
+            section_id: "sec_leaf_a1",
+            name: "Classic Pasta",
+            menu_id: "menu_demo_001",
+            parent_menu_section_id: "sec_child_a",
+            correlation_id: "corr_demo_001",
+            operation: "UPSERT",
+            partner_id: "partner_demo",
+            source_message_id: "msg-menu-section",
+            message_id: "msg-menu-section"
+          }
+        - {
+            section_id: "sec_leaf_a2",
+            name: "Baked Pasta",
+            menu_id: "menu_demo_001",
+            parent_menu_section_id: "sec_child_a",
+            correlation_id: "corr_demo_001",
+            operation: "UPSERT",
+            partner_id: "partner_demo",
+            source_message_id: "msg-menu-section",
+            message_id: "msg-menu-section"
+          }
+        - {
+            section_id: "sec_leaf_b1",
+            name: "Steak",
+            menu_id: "menu_demo_001",
+            parent_menu_section_id: "sec_child_b",
+            correlation_id: "corr_demo_001",
+            operation: "UPSERT",
+            partner_id: "partner_demo",
+            source_message_id: "msg-menu-section",
+            message_id: "msg-menu-section"
+          }
+        - {
+            section_id: "sec_leaf_b2",
+            name: "Skewers",
+            menu_id: "menu_demo_001",
+            parent_menu_section_id: "sec_child_b",
+            correlation_id: "corr_demo_001",
+            operation: "UPSERT",
+            partner_id: "partner_demo",
+            source_message_id: "msg-menu-section",
+            message_id: "msg-menu-section"
+          }
+        - {
+            section_id: "sec_deep_b2",
+            name: "Spicy Skewers",
+            menu_id: "menu_demo_001",
+            parent_menu_section_id: "sec_leaf_b2",
+            correlation_id: "corr_demo_001",
+            operation: "UPSERT",
+            partner_id: "partner_demo",
+            source_message_id: "msg-menu-section",
+            message_id: "msg-menu-section"
+          }

@@ -12,3 +12,5 @@ Reusable Jinja/SQL helpers. Prefer small, documented macros over copy-paste SQL.
 | `parse_flexible_timestamp` | Safe cast string / RFC3339 / epoch-millis timestamps; nulls out-of-range epochs | `examples/11-resource-router-error-sink/` |
 | `project_nested_json` (+ path / cast helpers) | Schema-spec driven JSON → typed columns (STRUCT / ARRAY / aliases) | `examples/12-nested-json-project-macro/` |
 | `marketplace_venue_schema` | Teaching venue schema-spec for `project_nested_json` | `examples/12-nested-json-project-macro/` |
+| `expand_nested_sections` (`menu_section_expansion_ctes`, helpers) | Flatten nested `hasMenuSection` trees to descendant section grain | `examples/13-nested-section-expand/` |
+| `marketplace_menu_section_schema` | Teaching menu-section schema-spec after expand + enrich | `examples/13-nested-section-expand/` |
