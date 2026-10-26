@@ -18,12 +18,14 @@ Sanitized teaching patterns only. Never dump company `dwh/dbt` wholesale.
 | 10 | Staging envelope parse + unit test (CMS events) | `examples/10-staging-envelope-parse/` | `feature/dbt-10-staging-envelope-parse` | 2026-10-05 |
 | 11 | Pub/Sub resource router + error sink | `examples/11-resource-router-error-sink/` + `macros/parse_flexible_timestamp.sql` | `feature/dbt-11-resource-router-error-sink` | 2026-10-12 |
 | 12 | Nested JSON project / schema-spec macro | `examples/12-nested-json-project-macro/` + `macros/project_nested_json.sql` + `macros/marketplace_venue_schema.sql` | `feature/dbt-12-nested-json-project-macro` | 2026-10-19 |
+| 13 | Nested section expand / unnest macro | `examples/13-nested-section-expand/` + `macros/expand_nested_sections.sql` + `macros/marketplace_menu_section_schema.sql` | `feature/dbt-13-nested-section-expand` | 2026-10-26 |
 
 ## Next candidates
 
 | # | Pattern | Suggested folder / branch | Notes |
 |---|---------|---------------------------|-------|
-| 13 | Nested section expand / unnest macro | `examples/13-nested-section-expand/` / `feature/dbt-13-nested-section-expand` | Source has section-expand helpers that flatten nested menu/section arrays after typed projection — distinct from the projector (12) |
+| 14 | Nested add-on section expand | `examples/14-addon-section-expand/` / `feature/dbt-14-addon-section-expand` | Sibling fan-out in source expand helpers (menuAddOn / defaultOption routes) — builds on 13 primitives |
+| 15 | Postal-code normalize macro | `examples/15-postal-code-normalize/` / `feature/dbt-15-postal-code-normalize` | Source SEO postal normalize helper — distinct from text-clean (07) |
 
 ## Out of scope (other automations)
 

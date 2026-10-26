@@ -1,0 +1,21 @@
+version: 2
+
+sources:
+  - name: marketplace_events
+    description: >
+      Placeholder landing dataset for marketplace Pub/Sub JSON. Point
+      database/schema at your project; do not commit real GCP ids.
+    database: your-gcp-project
+    schema: raw_marketplace
+    tables:
+      - name: marketplace_events_raw
+        description: >
+          Raw broker rows. `data` is the JSON body string; resource type
+          lives inside the payload (`@type`) for this teaching path.
+        columns:
+          - name: message_id
+            description: Pub/Sub message id.
+          - name: publish_time
+            description: Broker publish timestamp (incremental watermark).
+          - name: data
+            description: JSON payload as STRING.

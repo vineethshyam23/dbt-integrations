@@ -16,3 +16,4 @@ Small, complete pattern samples (SQL + YAML + docs) that demonstrate one idea en
 | 10 | Staging envelope parse + unit test (CMS events) | [10-staging-envelope-parse](./10-staging-envelope-parse/) |
 | 11 | Pub/Sub resource router + error sink | [11-resource-router-error-sink](./11-resource-router-error-sink/) |
 | 12 | Nested JSON project / schema-spec macro | [12-nested-json-project-macro](./12-nested-json-project-macro/) |
+| 13 | Nested section expand / unnest macro | [13-nested-section-expand](./13-nested-section-expand/) |
